@@ -14,6 +14,8 @@ const __dirname = path.dirname(__filename);
 
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 const PUBLIC_URL = process.env.PUBLIC_URL || `http://localhost:${PORT}`;
+const PRIVACY_URL = process.env.PRIVACY_URL || 'https://nexus-privacy.vercel.app';
+const TERMS_URL = process.env.TERMS_URL || 'https://terms-lyart-omega.vercel.app';
 
 const app = express();
 const server = http.createServer(app);

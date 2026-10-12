@@ -1,5 +1,5 @@
 const socket = io();
-const roomId = 'nexus-main';
+const roomId = 'nexus-room';
 
 const streamVideo = document.getElementById('streamVideo');
 const standbyScreen = document.getElementById('standbyScreen');
@@ -50,23 +50,21 @@ const rtcConfig = {
   ]
 };
 
-socket.emit('viewer:register', { roomId });
+const viewerName = `Viewer_${Math.floor(Math.random()*9000+1000)}`;
+socket.emit('room:join', { roomId, username: viewerName });
 
-socket.on('stream:status', ({ isLive, config, viewerCount }) => {
+socket.on('stream:status', ({ isLive, config }) => {
   updateLiveState(isLive, config);
-  if (typeof viewerCount === 'number') {
-    viewerCountEl.textContent = viewerCount;
-  }
 });
 
-socket.on('stream:config-changed', (config) => {
+socket.on('stream:config', (config) => {
   if (config) {
-    streamBadge.textContent = `${config.resolution || '1080p'} • ${config.fps || 60} FPS`;
+    streamBadge.textContent = `${config.res === 2160 ? '4K' : config.res + 'p'} • ${config.fps || 60} FPS`;
   }
 });
 
-socket.on('viewer:count', ({ count }) => {
-  viewerCountEl.textContent = count;
+socket.on('participants:update', (list) => {
+  if (Array.isArray(list)) viewerCountEl.textContent = list.length;
 });
 
 function updateLiveState(isLive, config) {
@@ -76,7 +74,7 @@ function updateLiveState(isLive, config) {
     viewerPulseDot.classList.remove('hidden');
     liveStatusText.textContent = 'AO VIVO';
     if (config) {
-      streamBadge.textContent = `${config.resolution || '1080p'} • ${config.fps || 60} FPS`;
+      streamBadge.textContent = `${config.res === 2160 ? '4K' : (config.res || 1080) + 'p'} • ${config.fps || 60} FPS`;
     }
   } else {
     liveBadge.classList.add('bg-slate-800/80', 'border-slate-700/60', 'text-slate-400');
