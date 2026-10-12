@@ -70,7 +70,19 @@ export class DiscordBot {
 
     try {
       const rest = new REST({ version: '10' }).setToken(this.#token);
-      await rest.put(Routes.applicationCommands(this.#clientId), { body: this.#buildCommands() });
+      const route = Routes.applicationCommands(this.#clientId);
+
+      // Busca os comandos existentes para preservar o Entry Point command
+      // (o Discord não permite removê-lo em um bulk update).
+      const existing = await rest.get(route);
+      const entryPoint = Array.isArray(existing)
+        ? existing.find(c => c.type === 4)
+        : null;
+
+      const body = this.#buildCommands();
+      if (entryPoint) body.push(entryPoint);
+
+      await rest.put(route, { body });
       console.log('[Discord Bot] Comandos de barra registrados com sucesso!');
     } catch (error) {
       console.error('[Discord Bot] Erro ao registrar comandos:', error.message);

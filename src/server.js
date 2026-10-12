@@ -20,8 +20,22 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: PUBLIC_URL,
-    methods: ['GET']
+    origin: (origin, callback) => {
+      // Permite a Atividade dentro do Discord (discordsays.com / discord.com), localhost e a PUBLIC_URL do túnel
+      const allowed = [
+        PUBLIC_URL,
+        'https://discord.com',
+        'https://www.discord.com',
+        'http://localhost:3001',
+        'http://localhost:3000'
+      ];
+      // Requests sem origin (mobile / curl) ou que terminam em discordsays.com são liberados
+      if (!origin || allowed.includes(origin) || origin.endsWith('.discordsays.com') || origin.endsWith('.discord.com') || origin.includes('trycloudflare.com') || origin.includes('loca.lt')) {
+        return callback(null, true);
+      }
+      return callback(null, true); // libera geral em dev para não bloquear a Atividade em iframe
+    },
+    methods: ['GET', 'POST']
   },
   maxHttpBufferSize: 1e5
 });
@@ -42,6 +56,16 @@ app.get('/', (req, res) => {
 
 app.get('/streamer', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/streamer.html'));
+});
+
+app.get('/privacy', (req, res) => {
+  res.type('text/html');
+  res.sendFile(path.join(__dirname, '../public/privacy.html'));
+});
+
+app.get('/terms', (req, res) => {
+  res.type('text/html');
+  res.sendFile(path.join(__dirname, '../public/termos.html'));
 });
 
 app.get('/config.js', (req, res) => {

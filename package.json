@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "tunnel": "npx localtunnel --port 3000"
+    "tunnel": "npx localtunnel --port 3001"
   },
   "dependencies": {
     "discord.js": "^14.27.0",
