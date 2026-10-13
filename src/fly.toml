@@ -1,0 +1,19 @@
+app = "nexus-stream-server"
+primary_region = "iad"
+[build]
+  dockerfile = "Dockerfile"
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+  DISCORD_TOKEN = "MTU1ODkxODI2NzE5MDM4Njc5OQ.GW4bjg.GzVaLrMZtX3_39zaxdk2KXu4fW9Sr6HUfyOltg"
+  CLIENT_ID = "1558918267190386799"
+  PRIVACY_URL = "https://nexus-privacy.vercel.app"
+  TERMS_URL = "https://terms-lyart-omega.vercel.app"
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+  [services.ports]
+    ports = ["80"]
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
